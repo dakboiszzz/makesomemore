@@ -85,6 +85,10 @@ def main():
 
     train_model(max_steps=100000, batch_size=32)
 
+if __name__ == "__main__":
+    main()
+
+
 
     
 
