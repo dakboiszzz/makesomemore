@@ -5,7 +5,8 @@ from scripts.train import layers, Bag,block_size,itos
 
 # Turn to the eval mode, not training mode
 for layer in layers:
-    layer.training = False
+    if hasattr(layer, 'training'):
+        layer.training = False
 # Sample 
 g_sample = torch.Generator().manual_seed(2147483647 + 10)
 for _ in range(20):
