@@ -15,12 +15,16 @@ def main():
     data_prep = DataPrep(words, block_size = config['block_size'])
     X,Y = data_prep.getData()
 
-    # Load all the config
+    # Load all the config 
     vocab_size = len(data_prep.string_to_int())
     block_size = config['block_size']
     n_hidden = config['n_hidden']
     emb_size = config['emb_size']
 
-    
+    # Create the Generator, using manual seed for reproducibility
+    g = torch.Generator().manual_seed(config['seed'])
+
+
+
     
 
