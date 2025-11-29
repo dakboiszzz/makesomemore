@@ -1,0 +1,10 @@
+LICENSE
+README.md
+setup.py
+name_generator.egg-info/PKG-INFO
+name_generator.egg-info/SOURCES.txt
+name_generator.egg-info/dependency_links.txt
+name_generator.egg-info/top_level.txt
+src/__init__.py
+src/data.py
+src/layers.py
