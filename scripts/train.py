@@ -82,8 +82,7 @@ def train_model(max_steps,batch_size):
 
     print(f'Final loss: {loss}')
 
-if __name__ == "__main__":
-    train_model(max_steps=config['max_steps'], batch_size=config['batch_size'])
+train_model(max_steps=config['max_steps'], batch_size=config['batch_size'])
 
 
 

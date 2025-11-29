@@ -1,12 +1,15 @@
 
 import torch
 import torch.nn.functional as F
-from train import layers, Bag,block_size,itos
+from train import layers,block_size,data_prep
 
 # Turn to the eval mode, not training mode
 for layer in layers:
     if hasattr(layer, 'training'):
         layer.training = False
+
+# Take the inverse mapping
+itos = data_prep.int_to_string()
 # Sample 
 g_sample = torch.Generator().manual_seed(2147483647 + 10)
 for _ in range(20):
