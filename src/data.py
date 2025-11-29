@@ -48,9 +48,3 @@ class DataPrep():
         X = torch.tensor(X)
         Y = torch.tensor(Y)
         return X,Y
-    # Load the data set
-    @staticmethod
-    def load_words(filepath):
-        """Load words from file"""
-        with open(filepath, 'r') as f:
-            return f.read().splitlines()
