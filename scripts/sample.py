@@ -1,7 +1,7 @@
 
 import torch
 import torch.nn.functional as F
-from scripts.train import layers, Bag,block_size,itos
+from train import layers, Bag,block_size,itos
 
 # Turn to the eval mode, not training mode
 for layer in layers:
