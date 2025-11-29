@@ -1,0 +1,49 @@
+# I don't really know this but this is what Claude recommended
+# But sometimes when I update something then the pycache get modified and it's annoying 
+# So I guess this is the meaning behind all of these
+# To stop that annoying tracker from tracking every single thing in the project
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+models/*.pt
+models/*.pth
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Data (optional - depends on your needs)
+# data/*.txt  # Uncomment if data files are large
