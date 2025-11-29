@@ -11,7 +11,7 @@ def main():
         config = yaml.safe_load(f)
     # Load the data
     data_path = config['data_path']
-    with open('data_path','r') as f:
+    with open(data_path,'r') as f:
         words = f.read().splitlines()
     data_prep = DataPrep(words, block_size = config['block_size'])
     X,Y = data_prep.getData()
