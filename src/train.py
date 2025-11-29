@@ -24,6 +24,31 @@ def main():
     # Create the Generator, using manual seed for reproducibility
     g = torch.Generator().manual_seed(config['seed'])
 
+    # Build the model
+
+    # Layers and parameters
+    layers = [Embedding(vocab_size,emb_size),Flatten(),
+            Linear((block_size * emb_size),n_hidden, bias = False), BatchNorm1d(n_hidden), Tanh(),
+            Linear(n_hidden,n_hidden,bias = False),                 BatchNorm1d(n_hidden), Tanh(),
+            Linear(n_hidden,n_hidden,bias = False),                 BatchNorm1d(n_hidden), Tanh(),
+            Linear(n_hidden,n_hidden,bias = False),                 BatchNorm1d(n_hidden), Tanh(),
+            Linear(n_hidden,n_hidden,bias = False),                 BatchNorm1d(n_hidden), Tanh(),
+            Linear(n_hidden,vocab_size, bias = False), BatchNorm1d(vocab_size) ]
+    
+    # Adjusting some layers for efficiency
+    with torch.no_grad():
+    # last layer: make less confident
+        layers[-1].bngain *= 0.1
+        #layers[-1].weight *= 0.1
+        # all other layers: apply gain
+        for layer in layers[:-1]:
+            if isinstance(layer, Linear):
+                layer.weight *= config['gain'] #5/3
+
+    # Collecting the parameters
+    parameters = []
+    for layer in layers:
+        parameters += layer.parameters()
 
 
     
