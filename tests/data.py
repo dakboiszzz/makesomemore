@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 
 # Load the dataset
-words = open('names.txt').read().splitlines()
+words = ['hunglt','lehoanglan']
 
 # Create DataPrep class, set block_size
 class DataPrep():
