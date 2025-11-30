@@ -4,7 +4,7 @@ import yaml
 from src.data import DataPrep
 from src.layers import Embedding, Flatten, Linear, Tanh, BatchNorm1d
 import torch.nn.functional as F
-
+import torch.optim as optim
 
 # Load the config file
 with open('config.yaml', 'r') as f:
@@ -81,6 +81,9 @@ def eval_split(X,Y,split = 'train'):
         if hasattr(layer,'training'):
             layer.training = True
     return loss.item()
+
+# Create an optimizer for our model, so that we won't need to adjust the lr by hand
+optimizer = optim.AdamW(parameters,lr = config['lr'])
 # Now we train
 def train_model(max_steps,batch_size):
     for i in range(max_steps):
@@ -98,7 +101,14 @@ def train_model(max_steps,batch_size):
             activations = layer(activations)
         loss = F.cross_entropy(activations,Y_batch)
 
-        # Implement the backward pass
+        # Implement the backward pass with the optimizer
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step() # Equal to updating the parameters
+
+        
+        # Now we don't need to set those things
+        '''
         for p in parameters:
             p.grad = None
         loss.backward()
@@ -107,6 +117,7 @@ def train_model(max_steps,batch_size):
         lr = 0.01 if i < 20000 else 0.001
         for p in parameters:
             p.data += -lr * p.grad
+        '''
 
         # Now we evaluate it after some intervals
         if i % 10000 == 0:
