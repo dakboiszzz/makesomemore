@@ -1,7 +1,7 @@
 
 import torch
 import torch.nn.functional as F
-from train import layers,block_size,data_prep
+from train import layers,block_size,data_prep_train
 
 # Turn to the eval mode, not training mode
 for layer in layers:
@@ -9,7 +9,7 @@ for layer in layers:
         layer.training = False
 
 # Take the inverse mapping
-itos = data_prep.int_to_string()
+itos = data_prep_train.int_to_string()
 # Sample 
 g_sample = torch.Generator().manual_seed(2147483647 + 10)
 for _ in range(20):

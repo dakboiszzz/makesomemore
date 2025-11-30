@@ -67,8 +67,8 @@ for layer in layers:
 def train_model(max_steps,batch_size):
     for i in range(max_steps):
         # Construting the mini-batch
-        ix = torch.randint(0,X.shape[0],(batch_size,), generator = g)
-        X_batch, Y_batch = X[ix], Y[ix]
+        ix = torch.randint(0,Xtr.shape[0],(batch_size,), generator = g)
+        X_batch, Y_batch = Xtr[ix], Ytr[ix]
 
         # Set the gradient first
         for p in parameters:
@@ -91,7 +91,6 @@ def train_model(max_steps,batch_size):
             p.data += -lr * p.grad
         if i % 10000 == 0:
             print(f'Step {i}, Loss: {loss.item():.4f}')
-
     print(f'Final loss: {loss}')
 
 train_model(max_steps=config['max_steps'], batch_size=config['batch_size'])
