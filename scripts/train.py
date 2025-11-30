@@ -6,18 +6,30 @@ from src.layers import Embedding, Flatten, Linear, Tanh, BatchNorm1d
 import torch.nn.functional as F
 
 
-# Load the config
+# Load the config file
 with open('config.yaml', 'r') as f:
     config = yaml.safe_load(f)
 # Load the data
 data_path = config['data_path']
 with open(data_path,'r') as f:
     words = f.read().splitlines()
-data_prep = DataPrep(words, block_size = config['block_size'])
-X,Y = data_prep.getData()
+
+import random
+random.seed(42)
+random.shuffle(words)
+n1 = int(0.8*len(words))
+n2 = int(0.9*len(words))
+
+data_prep_train = DataPrep(words[:n1], block_size = config['block_size'])
+data_prep_dev = DataPrep(words[n1:n2], block_size = config['block_size'])
+data_prep_test = DataPrep(words[n2:], block_size = config['block_size'])
+
+Xtr,  Ytr  = data_prep_train.getData()    # 80%
+Xdev, Ydev = data_prep_dev.getData()   # 10%
+Xte,  Yte  = data_prep_test.getData()    # 10%
 
 # Load all the config 
-vocab_size = len(data_prep.string_to_int())
+vocab_size = len(data_prep_train.string_to_int())
 block_size = config['block_size']
 n_hidden = config['n_hidden']
 emb_size = config['emb_size']
