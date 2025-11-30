@@ -63,6 +63,24 @@ parameters = []
 for layer in layers:
     parameters += layer.parameters()
 
+# We shall create an evaluating function
+@torch.no_grad()
+def eval_split(X,Y,split = 'train'):
+    # Set the data to eval mode
+    for layer in layers:
+        if hasattr(layer,'training'):
+            layer.training = False
+    # Compute the loss
+    activations = X
+    for layer in layers:
+        activations = layer(activations)
+    loss = F.cross_entropy(activations,Y)
+    print(f'{split} loss: {loss.item():.4f}')
+    # Before returning, we set the data back to the training mode, for training later
+    for layer in layers:
+        if hasattr(layer,'training'):
+            layer.training = True
+    return loss.item()
 # Now we train
 def train_model(max_steps,batch_size):
     for i in range(max_steps):
