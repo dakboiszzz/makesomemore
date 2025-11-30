@@ -1,6 +1,10 @@
 # makesomemore
 Based on the makemore series of Andrej
 
+## To Do
+- Train on Vietnamese names?
+- Rebuild the Adam Optimizer
+- Playing around with activations functions, `block_size`, and `emb_size`, or the number of layers
 
 ## Some interesting result
 - The train-val-test loss 
