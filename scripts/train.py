@@ -107,9 +107,17 @@ def train_model(max_steps,batch_size):
         lr = 0.01 if i < 20000 else 0.001
         for p in parameters:
             p.data += -lr * p.grad
+
+        # Now we evaluate it after some intervals
         if i % 10000 == 0:
-            print(f'Step {i}, Loss: {loss.item():.4f}')
-    print(f'Final loss: {loss}')
+            print(f'\nStep {i}:')
+            eval_split(Xtr,Ytr,'train')
+            eval_split(Xdev,Ydev,'val')
+
+    print(f'\nFinal Evaluation:')
+    eval_split(Xtr,Ytr,'train')
+    eval_split(Xdev,Ydev,'val')
+    eval_split(Xte,Yte,'test')
 
 train_model(max_steps=config['max_steps'], batch_size=config['batch_size'])
 
