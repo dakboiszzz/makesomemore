@@ -44,3 +44,59 @@ quinterri.
 jarysia.
 kael.
 ```
+
+## Setup
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/dakboiszzz/makesomemore.git
+cd makesomemore
+```
+
+### 2. Create virtual environment
+```bash
+python3 -m venv .venv
+```
+
+### 3. Activate virtual environment
+```bash
+# On Mac/Linux:
+source .venv/bin/activate
+
+# On Windows:
+.venv\Scripts\activate
+```
+
+### 4. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+
+### Train the model
+```bash
+python scripts/train.py
+```
+
+### Generate names
+```bash
+python scripts/sample.py
+```
+
+## Project Structure
+```
+makesomemore/
+├── data/
+│   └── names.txt
+├── src/
+│   ├── __init__.py
+│   ├── data.py
+│   └── layers.py
+├── scripts/
+│   ├── train.py
+│   └── sample.py
+├── requirements.txt
+├── config.yaml
+└── README.md
+```
