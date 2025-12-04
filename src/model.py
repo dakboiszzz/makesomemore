@@ -42,8 +42,21 @@ class Makemore():
             paramters += layer.parameters()
         return parameters
     def _init_weights(self):
+        # Adjusting some layers for efficiency
         with torch.no_grad():
+            # Last layer; Make less confident
             self.layers[-1].bngain != 0.1
+            # Other linear layers apply gain = 1.0
             for layer in self.layers[:-1]:
                 if isinstance(layer,Linear):
                     layer.weight *= 1.0
+    # Implement the forward pass
+    def __call__(self,x):
+        return self.forward(x)
+    def forward(self,x):
+        activations = x
+        for layer in self.layers:
+            activations = layer(activations)
+        return activations
+    
+    
