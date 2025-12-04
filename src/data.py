@@ -5,10 +5,10 @@ class DataPrep():
     def __init__(self,words,block_size = 2):
         self.words = words
         self.block_size = block_size
+        self.chars = self.getChars()
+        self.vocab_size = len(self.chars) + 1
         self.stoi = self.string_to_int()
         self.itos = self.int_to_string()
-        self.chars = self.getChars()
-        self.vocab_size = len(self.chars)
     def getChars(self):
         ## This is my code but it's not really good
         """

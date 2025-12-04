@@ -32,7 +32,7 @@ Xte,  Yte  = data_prep_test.getData()    # 10%
 g = torch.Generator().manual_seed(config['seed'])
 
 # Build the model
-model = Makemore(vocab_size = len(data_prep_train.string_to_int()),
+model = Makemore(vocab_size = data_prep_train.vocab_size,
                  block_size = config['block_size'],
                 n_hidden = config['n_hidden'],
                 emb_size = config['emb_size'],
