@@ -1,5 +1,6 @@
 # The model architecture will be shown here, this is for generating when calling API
 import torch
+import torch.nn.functional as F
 from src.layers import Embedding, Flatten, Linear, BatchNorm1d, Tanh
 
 class Makemore():
@@ -67,4 +68,55 @@ class Makemore():
     def eval_mode(self):
         for layer in self.layers:
             layer.training = False
-    
+    def save_checkpoint(self,data_prep,filepath):
+        checkpoint = {
+            'model_state' : {},
+            'vocab_size': self.vocab_size,
+            'block_size': self.block_size,
+            'emb_size': self.emb_size,
+            'n_hidden': self.n_hidden,
+            'n_blocks': self.n_blocks,
+            'generator': self.generator,
+            'itos': data_prep.itos,
+            'stoi': data_prep.stoi
+        }
+        for i,layer in enumerate(self.layers):
+            for j, p in enumerate(layer.parameters()):
+                checkpoint['model_state'][f'layer_{i}_param{j}'] = p.data
+        torch.save(checkpoint,filepath)
+        print(f'Checkpoint saved to {filepath}')
+
+    def load_checkpoint(self,filepath):
+        checkpoint = torch.load(filepath)
+        # Load parameters
+        for i, layer in enumerate(self.layers):
+            for j, p in enumerate(layer.parameters()):
+                key = f'layer_{i}_param_{j}'
+                if key in checkpoint['model_state']:
+                    p.data = checkpoint['model_state'][key]
+        return self, checkpoint['itos'], checkpoint['stoi'], checkpoint['block_size']
+    def sample(self, itos, num_samples = 20):
+        self.eval_mode()
+        names = []
+        for _ in range(num_samples):
+            out = []
+            context = [0] * self.block_size
+            while True:
+                context_tensor = torch.tensor([context])
+                activations = context_tensor
+                for layer in self.layers:
+                    activations = layer(activations)
+                
+                logits = activations
+                probs = F.softmax(logits, dim=1)
+
+                ix = torch.multinomial(probs, num_samples=1,generator = self.generator).item()
+                context = context[:1] + [ix]
+                out.append(ix)
+                if ix == 0:
+                    break
+                if len(out) > 50: # Safety limit
+                    break
+            name = ''.join(itos[i] for i in out[:-1])
+            names.append(name)
+        return names
