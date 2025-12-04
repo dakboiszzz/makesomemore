@@ -101,7 +101,7 @@ class Makemore():
         }
         for i,layer in enumerate(self.layers):
             for j, p in enumerate(layer.parameters()):
-                checkpoint['model_state'][f'layer_{i}_param{j}'] = p.data
+                checkpoint['model_state'][f'layer_{i}_param_{j}'] = p.data
         torch.save(checkpoint,filepath)
         print(f'Checkpoint saved to {filepath}')
 
