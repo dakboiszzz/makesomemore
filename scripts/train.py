@@ -46,10 +46,8 @@ def eval_split(X,Y,split = 'train'):
     # Set the data to eval mode
     model.eval_mode()
     # Compute the loss
-    activations = X
-    for layer in model.layers:
-        activations = layer(activations)
-    loss = F.cross_entropy(activations,Y)
+    logits = model(X)
+    loss = F.cross_entropy(logits,Y)
     print(f'{split} loss: {loss.item():.4f}')
     # Before returning, we set the data back to the training mode, for training later
     model.train_mode()
