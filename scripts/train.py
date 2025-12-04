@@ -71,7 +71,9 @@ def train_model(max_steps,batch_size):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step() # Equal to updating the parameters
-
+        # Set the gradient first
+        for p in model.parameters:
+            p.requires_grad = True
         
         # Now we don't need to set those things
         '''
