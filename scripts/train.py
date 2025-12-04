@@ -6,6 +6,12 @@ from src.model import Makemore
 import torch.nn.functional as F
 import torch.optim as optim
 
+# Set device
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(f'Using device: {device}')
+if torch.cuda.is_available():
+    print(f'GPU: {torch.cuda.get_device_name(0)}')
+
 # Load the config files
 with open('config.yaml', 'r') as f:
     config = yaml.safe_load(f)
@@ -28,6 +34,10 @@ Xtr,  Ytr  = data_prep_train.getData()    # 80%
 Xdev, Ydev = data_prep_dev.getData()   # 10%
 Xte,  Yte  = data_prep_test.getData()    # 10%
 
+# Move to GPU
+Xtr, Ytr = Xtr.to(device), Ytr.to(device)
+Xdev, Ydev = Xdev.to(device), Ydev.to(device)
+Xte, Yte = Xte.to(device), Yte.to(device)
 # Create the Generator, using manual seed for reproducibility
 g = torch.Generator().manual_seed(config['seed'])
 
@@ -61,15 +71,15 @@ def train_model(max_steps,batch_size):
         # Construting the mini-batch
         ix = torch.randint(0,Xtr.shape[0],(batch_size,), generator = g)
         X_batch, Y_batch = Xtr[ix], Ytr[ix]
+        # Set the gradient first
+        for p in model.parameters:
+            p.data = p.data.to(device)
+            p.requires_grad = True
         # Set the model to training mode
         model.train_mode()
         # Implement the forward pass
         logits = model(X_batch)
         loss = F.cross_entropy(logits,Y_batch)
-
-        # Set the gradient first
-        for p in model.parameters:
-            p.requires_grad = True
 
         # Implement the backward pass with the optimizer
         optimizer.zero_grad()
