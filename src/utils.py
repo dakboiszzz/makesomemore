@@ -38,3 +38,27 @@ def load_checkpoint(filepath):
             if key in checkpoint['model_state']:
                 p.data = checkpoint['model_state'][key]
     return model, checkpoint['itos'], checkpoint['stoi'], checkpoint['block_size']
+def sample(model, itos, block_size,num_samples = 20, seed = None):
+    if seed is not None:
+        g = torch.Generator().manual_seed(seed)
+    else:
+        g = None
+    model.eval_mode()
+    names = []
+    for _ in range(num_samples):
+        out = []
+        context = [0] * block_size
+        while True:
+            logits = model(torch.tensor([context]))
+            probs = F.softmax(logits,dim = 1)
+
+            ix = torch.multinomial(probs, num_samples=1,generator = g).item()
+            context = context[:1] + [ix]
+            out.append(ix)
+            if ix == 0:
+                break
+            if len(out) > 50: # Safety limit
+                break
+        name = ''.join(itos[i] for i in out[:-1])
+        names.append(name)
+    return names
