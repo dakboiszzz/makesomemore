@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from src.layers import Embedding, Flatten, Linear, BatchNorm1d, Tanh
 
 class Makemore():
-    def __init__(self, vocab_size, block_size, emb_size = 10, n_hidden = 5, n_blocks = 5, generator = None):
+    def __init__(self, vocab_size, block_size, emb_size = 10, n_hidden = 5, n_blocks = 5, generator = None,device = 'cpu'):
         self.vocab_size = vocab_size
         self.emb_size = emb_size
         self.block_size = block_size
@@ -18,6 +18,9 @@ class Makemore():
         # Take the parameters
         self.parameters = self._collect_parameters()
         self._init_weights()
+
+        # Move to device
+        self.to(device)
     def _build_layers(self, vocab_size, block_size, emb_size, n_hidden, n_blocks, generator):
         # Input layers
         layers = [
@@ -69,6 +72,22 @@ class Makemore():
     def eval_mode(self):
         for layer in self.layers:
             layer.training = False
+    def to(self,device):
+        #Move all layers to device
+        self.device = torch.device(device)
+        for layer in self.layers:
+            if hasattr(layer, 'emb_matrix'):
+                layer.emb_matrix = layer.emb_matrix.to(device)
+            if hasattr(layer, 'weight'):
+                layer.weight = layer.weight.to(device)
+                if layer.bias is not None:
+                    layer.bias = layer.bias.to(device)
+            if hasattr(layer, 'bngain'):
+                layer.bngain = layer.bngain.to(device)
+                layer.bnbias = layer.bnbias.to(device)
+                layer.running_mean = layer.running_mean.to(device)
+                layer.running_var = layer.running_var.to(device)
+        return self
     def save_checkpoint(self,data_prep,filepath):
         checkpoint = {
             'model_state' : {},
@@ -126,7 +145,7 @@ class Makemore():
         out = []
         context = [0,0,stoi[char]]
         while True:
-            context_tensor = torch.tensor([context])
+            context_tensor = torch.tensor([context]).to(self.device)
             logits = self(context_tensor)
             probs = F.softmax(logits,dim = 1)
             ix = torch.multinomial(probs, num_samples = 1, generator = generator).item()
