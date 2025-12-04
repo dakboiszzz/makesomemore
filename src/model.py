@@ -87,6 +87,8 @@ class Makemore():
                 layer.bnbias = layer.bnbias.to(device)
                 layer.running_mean = layer.running_mean.to(device)
                 layer.running_var = layer.running_var.to(device)
+                layer.bnmean = layer.bnmean.to(device)
+                layer.bnvar = layer.bnvar.to(device)
         return self
     def save_checkpoint(self,data_prep,filepath):
         checkpoint = {
