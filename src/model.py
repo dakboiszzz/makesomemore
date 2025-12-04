@@ -9,6 +9,7 @@ class Makemore():
         self.emb_size = emb_size
         self.block_size = block_size
         self.n_hidden = n_hidden
+        self.n_blocks = n_blocks
         self.generator = generator
 
         # Build the layers
@@ -26,7 +27,7 @@ class Makemore():
             Tanh()
         ]
         # Adding blocks
-        for _ in range(n_blocks):
+        for _ in range(self.n_blocks):
             layers.extend([
                 Linear(n_hidden,n_hidden, bias = False,generator = self.generator),
                 BatchNorm1d(n_hidden),
@@ -47,7 +48,7 @@ class Makemore():
         # Adjusting some layers for efficiency
         with torch.no_grad():
             # Last layer; Make less confident
-            self.layers[-1].bngain != 0.1
+            self.layers[-1].bngain *= 0.1
             # Other linear layers apply gain = 1.0
             for layer in self.layers[:-1]:
                 if isinstance(layer,Linear):
@@ -111,7 +112,7 @@ class Makemore():
                 probs = F.softmax(logits, dim=1)
 
                 ix = torch.multinomial(probs, num_samples=1,generator =generator).item()
-                context = context[:1] + [ix]
+                context = context[1:] + [ix]
                 out.append(ix)
                 if ix == 0:
                     break
@@ -123,15 +124,14 @@ class Makemore():
     def generate(self, char,itos,stoi,generator = None):
         self.eval_mode()
         out = []
-        context = [0,0]
-        context.appnend(stoi[char])
-        context_tensor = torch.tensor([context])
+        context = [0,0,stoi[char]]
         while True:
+            context_tensor = torch.tensor([context])
             logits = self(context_tensor)
             probs = F.softmax(logits,dim = 1)
             ix = torch.multinomial(probs, num_samples = 1, generator = generator).item()
-            context = context[:1] + [ix]
-            out.appned(ix)
+            context = context[1:] + [ix]
+            out.append(ix)
             if ix == 0:
                 break
             if len(out) > 50: # Safety limit
