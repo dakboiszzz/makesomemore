@@ -47,7 +47,7 @@ model = Makemore(vocab_size = data_prep_train.vocab_size,
                 n_hidden = config['n_hidden'],
                 emb_size = config['emb_size'],
                 n_blocks = config['n_blocks'],
-                generator = g
+                generator = g, device = device
                 )
 
 # We shall create an evaluating function

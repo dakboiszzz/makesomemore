@@ -14,10 +14,9 @@ class Makemore():
 
         # Build the layers
         self.layers = self._build_layers(vocab_size, block_size, emb_size, n_hidden, n_blocks, generator)
-
+        self._init_weights()
         # Take the parameters
         self.parameters = self._collect_parameters()
-        self._init_weights()
 
         # Move to device
         self.to(device)
@@ -87,8 +86,7 @@ class Makemore():
                 layer.bnbias = layer.bnbias.to(device)
                 layer.running_mean = layer.running_mean.to(device)
                 layer.running_var = layer.running_var.to(device)
-                layer.bnmean = layer.bnmean.to(device)
-                layer.bnvar = layer.bnvar.to(device)
+
         return self
     def save_checkpoint(self,data_prep,filepath):
         checkpoint = {
