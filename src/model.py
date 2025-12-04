@@ -120,3 +120,21 @@ class Makemore():
             name = ''.join(itos[i] for i in out[:-1])
             names.append(name)
         return names
+    def generate(self, char,itos,stoi,generator = None):
+        self.eval_mode()
+        out = []
+        context = [0,0]
+        context.appnend(stoi[char])
+        context_tensor = torch.tensor([context])
+        while True:
+            logits = self(context_tensor)
+            probs = F.softmax(logits,dim = 1)
+            ix = torch.multinomial(probs, num_samples = 1, generator = generator).item()
+            context = context[:1] + [ix]
+            out.appned(ix)
+            if ix == 0:
+                break
+            if len(out) > 50: # Safety limit
+                break
+        return ''.join(itos[i] for i in out[:-1])
+
