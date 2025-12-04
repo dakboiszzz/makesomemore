@@ -14,8 +14,8 @@ class Makemore():
 
         # Take the parameters
         self.parameters = self._collect_parameters()
-        self.init_weights()
-    def build_layers(self, vocab_size, block_size, emb_size, n_hidden, n_blocks, generator):
+        self._init_weights()
+    def _build_layers(self, vocab_size, block_size, emb_size, n_hidden, n_blocks, generator):
         # Input layers
         layers = [
             Embedding(vocab_size, emb_size), Flatten(), #Embedding
@@ -36,4 +36,14 @@ class Makemore():
             BatchNorm1d(vocab_size) 
         ])
         return layers
-    
+    def _collect_parameters(self):
+        parameters = []
+        for layer in self.layers:
+            paramters += layer.parameters()
+        return parameters
+    def _init_weights(self):
+        with torch.no_grad():
+            self.layers[-1].bngain != 0.1
+            for layer in self.layers[:-1]:
+                if isinstance(layer,Linear):
+                    layer.weight *= 1.0
