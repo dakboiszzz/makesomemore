@@ -1,6 +1,6 @@
 # The model architecture will be shown here, this is for generating when calling API
 import torch
-from layers import Embedding, Flatten, Linear, BatchNorm1d, Tanh
+from src.layers import Embedding, Flatten, Linear, BatchNorm1d, Tanh
 
 class Makemore():
     def __init__(self, vocab_size, block_size, emb_size = 10, n_hidden = 5, n_blocks = 5, generator = None):
@@ -39,7 +39,7 @@ class Makemore():
     def _collect_parameters(self):
         parameters = []
         for layer in self.layers:
-            paramters += layer.parameters()
+            parameters += layer.parameters()
         return parameters
     def _init_weights(self):
         # Adjusting some layers for efficiency
@@ -58,5 +58,12 @@ class Makemore():
         for layer in self.layers:
             activations = layer(activations)
         return activations
-    
+
+    # Setting training and eval mode
+    def train_mode(self):
+        for layer in self.layers:
+            layer.training = True
+    def eval_mode(self):
+        for layer in self.layers:
+            layer.training = False
     

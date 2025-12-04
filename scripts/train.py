@@ -2,7 +2,7 @@ import torch
 import sys
 import yaml
 from src.data import DataPrep
-from src.layers import Embedding, Flatten, Linear, Tanh, BatchNorm1d
+from src.model import Makemore
 import torch.nn.functional as F
 import torch.optim as optim
 
@@ -28,62 +28,35 @@ Xtr,  Ytr  = data_prep_train.getData()    # 80%
 Xdev, Ydev = data_prep_dev.getData()   # 10%
 Xte,  Yte  = data_prep_test.getData()    # 10%
 
-# Load all the config 
-vocab_size = len(data_prep_train.string_to_int())
-block_size = config['block_size']
-n_hidden = config['n_hidden']
-emb_size = config['emb_size']
-
 # Create the Generator, using manual seed for reproducibility
 g = torch.Generator().manual_seed(config['seed'])
 
 # Build the model
-
-# Layers and parameters
-layers = [Embedding(vocab_size,emb_size),Flatten(),
-        Linear((block_size * emb_size),n_hidden, bias = False), BatchNorm1d(n_hidden), Tanh(),
-        Linear(n_hidden,n_hidden,bias = False),                 BatchNorm1d(n_hidden), Tanh(),
-        Linear(n_hidden,n_hidden,bias = False),                 BatchNorm1d(n_hidden), Tanh(),
-        Linear(n_hidden,n_hidden,bias = False),                 BatchNorm1d(n_hidden), Tanh(),
-        Linear(n_hidden,n_hidden,bias = False),                 BatchNorm1d(n_hidden), Tanh(),
-        Linear(n_hidden,vocab_size, bias = False), BatchNorm1d(vocab_size) ]
-    
-# Adjusting some layers for efficiency
-with torch.no_grad():
-# last layer: make less confident
-    layers[-1].bngain *= 0.1
-    #layers[-1].weight *= 0.1
-    # all other layers: apply gain
-    for layer in layers[:-1]:
-        if isinstance(layer, Linear):
-            layer.weight *= config['gain'] #5/3
-
-# Collecting the parameters
-parameters = []
-for layer in layers:
-    parameters += layer.parameters()
+model = Makemore(vocab_size = len(data_prep_train.string_to_int()),
+                 block_size = config['block_size'],
+                n_hidden = config['n_hidden'],
+                emb_size = config['emb_size'],
+                n_blocks = config['n_blocks'],
+                generator = g
+                )
 
 # We shall create an evaluating function
 @torch.no_grad()
 def eval_split(X,Y,split = 'train'):
     # Set the data to eval mode
-    for layer in layers:
-        if hasattr(layer,'training'):
-            layer.training = False
+    model.eval_mode()
     # Compute the loss
     activations = X
-    for layer in layers:
+    for layer in model.layers:
         activations = layer(activations)
     loss = F.cross_entropy(activations,Y)
     print(f'{split} loss: {loss.item():.4f}')
     # Before returning, we set the data back to the training mode, for training later
-    for layer in layers:
-        if hasattr(layer,'training'):
-            layer.training = True
+    model.train_mode()
     return loss.item()
 
 # Create an optimizer for our model, so that we won't need to adjust the lr by hand
-optimizer = optim.AdamW(parameters,lr = config['lr'])
+optimizer = optim.AdamW(model.parameters,lr = config['lr'])
 # Now we train
 def train_model(max_steps,batch_size):
     for i in range(max_steps):
@@ -92,14 +65,13 @@ def train_model(max_steps,batch_size):
         X_batch, Y_batch = Xtr[ix], Ytr[ix]
 
         # Set the gradient first
-        for p in parameters:
+        for p in model.parameters:
             p.requires_grad = True
-
+        # Set the model to training mode
+        model.train_mode()
         # Implement the forward pass
-        activations = X_batch
-        for layer in layers:
-            activations = layer(activations)
-        loss = F.cross_entropy(activations,Y_batch)
+        logits = model(X_batch)
+        loss = F.cross_entropy(logits,Y_batch)
 
         # Implement the backward pass with the optimizer
         optimizer.zero_grad()

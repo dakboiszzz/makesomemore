@@ -4,6 +4,7 @@ checkpoint_path: 'models/checkpoint.pt'
 block_size: 3
 emb_size: 10
 n_hidden: 100
+n_blocks: 5
 
 seed: 2147483647
 gain: 1.0
