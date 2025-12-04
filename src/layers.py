@@ -58,13 +58,14 @@ class BatchNorm1d():
         self.running_var  = torch.ones(dim)
 
     def __call__(self,x):
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        # Ensure batch-norm statistics are computed/moved to the input's device
+        device = x.device
         if self.training:
-            bnmean = torch.mean(x,0,keepdim = True).to(device)
-            bnvar = torch.var(x,0,keepdim = True).to(device)
+            bnmean = torch.mean(x, 0, keepdim=True).to(device)
+            bnvar = torch.var(x, 0, keepdim=True).to(device)
         else:
-            bnmean = self.running_mean
-            bnvar = self.running_var
+            bnmean = self.running_mean.to(device)
+            bnvar = self.running_var.to(device)
         xhat = (x - bnmean) / torch.sqrt(bnvar + self.eps)
         self.out = self.bngain * xhat + self.bnbias
         if self.training:

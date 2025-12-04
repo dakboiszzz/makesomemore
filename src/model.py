@@ -15,11 +15,10 @@ class Makemore():
         # Build the layers
         self.layers = self._build_layers(vocab_size, block_size, emb_size, n_hidden, n_blocks, generator)
         self._init_weights()
-        # Take the parameters
-        self.parameters = self._collect_parameters()
-
-        # Move to device
+        # Move to device, then collect parameters so they reference the actual tensors
         self.to(device)
+        # Take the parameters (collect after moving to device)
+        self.parameters = self._collect_parameters()
     def _build_layers(self, vocab_size, block_size, emb_size, n_hidden, n_blocks, generator):
         # Input layers
         layers = [
@@ -44,7 +43,13 @@ class Makemore():
     def _collect_parameters(self):
         parameters = []
         for layer in self.layers:
-            parameters += layer.parameters()
+            for p in layer.parameters():
+                # ensure parameters require gradients
+                try:
+                    p.requires_grad = True
+                except Exception:
+                    pass
+                parameters.append(p)
         return parameters
     def _init_weights(self):
         # Adjusting some layers for efficiency
