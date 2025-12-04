@@ -95,7 +95,7 @@ class Makemore():
                 if key in checkpoint['model_state']:
                     p.data = checkpoint['model_state'][key]
         return self, checkpoint['itos'], checkpoint['stoi'], checkpoint['block_size']
-    def sample(self, itos, num_samples = 20):
+    def sample(self, itos, num_samples = 20,generator = None):
         self.eval_mode()
         names = []
         for _ in range(num_samples):
@@ -110,7 +110,7 @@ class Makemore():
                 logits = activations
                 probs = F.softmax(logits, dim=1)
 
-                ix = torch.multinomial(probs, num_samples=1,generator = self.generator).item()
+                ix = torch.multinomial(probs, num_samples=1,generator =generator).item()
                 context = context[:1] + [ix]
                 out.append(ix)
                 if ix == 0:
