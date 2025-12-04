@@ -121,7 +121,7 @@ class Makemore():
             out = []
             context = [0] * self.block_size
             while True:
-                context_tensor = torch.tensor([context])
+                context_tensor = torch.tensor([context]).to(self.device)
                 activations = context_tensor
                 for layer in self.layers:
                     activations = layer(activations)
