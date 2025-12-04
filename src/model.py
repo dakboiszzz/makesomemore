@@ -8,6 +8,7 @@ class Makemore():
         self.emb_size = emb_size
         self.block_size = block_size
         self.n_hidden = n_hidden
+        self.generator = generator
 
         # Build the layers
         self.layers = self._build_layers(vocab_size, block_size, emb_size, n_hidden, n_blocks, generator)
@@ -18,21 +19,21 @@ class Makemore():
     def _build_layers(self, vocab_size, block_size, emb_size, n_hidden, n_blocks, generator):
         # Input layers
         layers = [
-            Embedding(vocab_size, emb_size), Flatten(), #Embedding
-            Linear((block_size * emb_size),n_hidden,bias = False),
+            Embedding(vocab_size, emb_size, generator = self.generator), Flatten(), #Embedding
+            Linear((block_size * emb_size),n_hidden,bias = False, generator = self.generator),
             BatchNorm1d(n_hidden),
             Tanh()
         ]
         # Adding blocks
         for _ in range(n_blocks):
             layers.extend([
-                Linear(n_hidden,n_hidden, bias = False),
+                Linear(n_hidden,n_hidden, bias = False,generator = self.generator),
                 BatchNorm1d(n_hidden),
                 Tanh()
             ])
         # Output layer
         layers.extend([
-            Linear(n_hidden,vocab_size, bias = False), 
+            Linear(n_hidden,vocab_size, bias = False, generator = self.generator), 
             BatchNorm1d(vocab_size) 
         ])
         return layers

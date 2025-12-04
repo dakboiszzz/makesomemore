@@ -9,6 +9,7 @@ def save_checkpoint(model,data_prep,filepath):
         'emb_size': model.emb_size,
         'n_hidden': model.n_hidden,
         'n_blocks': model.n_blocks,
+        'generator': model.generator,
         'itos': data_prep.itos,
         'stoi': data_prep.stoi
     }
@@ -27,7 +28,8 @@ def load_checkpoint(filepath):
         block_size = checkpoint['block_size'],
         emb_size = checkpoint['emb_size'],
         n_hidden = checkpoint['n_hidden'],
-        n_blocks = checkpoint['n_blocks']
+        n_blocks = checkpoint['n_blocks'],
+        generator = checkpoint['generator']
     )
     # Load parameters
     for i, layer in enumerate(model.layers):
