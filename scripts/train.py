@@ -6,7 +6,7 @@ from src.layers import Embedding, Flatten, Linear, Tanh, BatchNorm1d
 import torch.nn.functional as F
 import torch.optim as optim
 
-# Load the config file
+# Load the config files
 with open('config.yaml', 'r') as f:
     config = yaml.safe_load(f)
 # Load the data
