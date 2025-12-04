@@ -63,10 +63,6 @@ def train_model(max_steps,batch_size):
         # Construting the mini-batch
         ix = torch.randint(0,Xtr.shape[0],(batch_size,), generator = g)
         X_batch, Y_batch = Xtr[ix], Ytr[ix]
-
-        # Set the gradient first
-        for p in model.parameters:
-            p.requires_grad = True
         # Set the model to training mode
         model.train_mode()
         # Implement the forward pass
