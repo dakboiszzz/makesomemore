@@ -101,6 +101,9 @@ def train_model(max_steps,batch_size):
     eval_split(Xtr,Ytr,'train')
     eval_split(Xdev,Ydev,'val')
     eval_split(Xte,Yte,'test')
+    print("\nSaving model checkpoint...")
+    model.save_checkpoint(data_prep_train, 'models/checkpoint.pt')
+    print("Training complete!")
 
 train_model(max_steps=config['max_steps'], batch_size=config['batch_size'])
 

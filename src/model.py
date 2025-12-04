@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from src.layers import Embedding, Flatten, Linear, BatchNorm1d, Tanh
 
 class Makemore():
-    def __init__(self, vocab_size, block_size, emb_size = 10, n_hidden = 5, n_blocks = 5, generator = None,device = 'cpu'):
+    def __init__(self, vocab_size = 27, block_size = 3, emb_size = 10, n_hidden = 5, n_blocks = 5, generator = None,device = 'cpu'):
         self.vocab_size = vocab_size
         self.emb_size = emb_size
         self.block_size = block_size
@@ -96,7 +96,6 @@ class Makemore():
             'emb_size': self.emb_size,
             'n_hidden': self.n_hidden,
             'n_blocks': self.n_blocks,
-            'generator': self.generator,
             'itos': data_prep.itos,
             'stoi': data_prep.stoi
         }
