@@ -1,6 +1,11 @@
 import torch
 import sys
 import yaml
+# This is for ading the module
+import os
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_root)
+
 from src.data import DataPrep
 from src.model import Makemore
 import torch.nn.functional as F

@@ -1,23 +1,12 @@
-
-'''import torch
-from src.model import Makemore 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-print(f"Checkpoint loaded, device: {device}")
-
-model = Makemore()
-
-model.load_checkpoint('models/checkpoint.pt')
-
-names = model.sample(itos, num_samples=50)
-print(names)
-'''
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import torch
 from src.model import Makemore
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+print(f"Checkpoint loaded, device: {device}")
 
 # Load checkpoint with weights_only=False
 checkpoint = torch.load('models/checkpoint.pt', weights_only=False)
@@ -39,8 +28,8 @@ itos = checkpoint['itos']
 block_size = checkpoint['block_size']
 
 # Sample
-g_sample = torch.Generator().manual_seed(2147483647 + 10)
-names = model.sample(itos, num_samples=20, generator=g_sample)
+g_sample = torch.Generator(device = device).manual_seed(2147483647 + 10)
+names = model.sample(itos, num_samples=20)
 
 print("\nGenerated Names:\n")
 print("=" * 40)
